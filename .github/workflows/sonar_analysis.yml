@@ -22,19 +22,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Agregar certificado ngrok
-        env:
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: |
-          HOST=$(echo $SONAR_HOST_URL | sed 's|https://||')
-          echo | openssl s_client -connect ${HOST}:443 2>/dev/null | openssl x509 > ngrok-cert.pem
-          keytool -import -noprompt -alias ngrok -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -file ngrok-cert.pem
-
-      - name: Instalar y ejecutar SonarScanner
+      - name: Agregar certificado ngrok y ejecutar SonarScanner
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
+          HOST=$(echo $SONAR_HOST_URL | sed 's|https://||')
+          echo | openssl s_client -connect ${HOST}:443 2>/dev/null | openssl x509 > ngrok-cert.pem
+          sudo keytool -import -noprompt -alias ngrok -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -file ngrok-cert.pem
           wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.3.0.1492-linux.zip
           unzip -q sonar-scanner-cli-3.3.0.1492-linux.zip
           sonar-scanner-3.3.0.1492-linux/bin/sonar-scanner \
