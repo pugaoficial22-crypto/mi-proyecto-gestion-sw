@@ -11,34 +11,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clonación del repositorio (Checkout)
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Java 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Instalar SonarScanner manualmente (Evita descargas pesadas via Ngrok)
+      - name: Ejecutar Scanner con Docker (Solución Anti-Hash)
         run: |
-          URL="https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip"
-          curl -sSLo sonar-scanner.zip $URL
-          unzip -o sonar-scanner.zip
-          echo "$(pwd)/sonar-scanner-5.0.1.3006-linux/bin" >> $GITHUB_PATH
-
-      - name: Ejecutar Análisis Directo
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: |
-          sonar-scanner \
+          docker run \
+            --rm \
+            -e SONAR_HOST_URL="${{ secrets.SONAR_HOST_URL }}" \
+            -e SONAR_TOKEN="${{ secrets.SONAR_TOKEN }}" \
+            -v "${{ github.workspace }}:/usr/src" \
+            sonarsource/sonar-scanner-cli \
             -Dsonar.projectKey=mi-proyecto-gestion-sw \
             -Dsonar.sources=. \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_TOKEN \
             -Dsonar.scanner.skipSslVerification=true \
-            -Dsonar.qualitygate.wait=false \
             -Dsonar.ws.timeout=600
