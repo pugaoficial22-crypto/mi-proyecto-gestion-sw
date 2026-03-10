@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
   sonarQube-analysis:
@@ -36,4 +33,6 @@ jobs:
             -Dsonar.projectKey=mi-proyecto-gestion-sw \
             -Dsonar.sources=src \
             -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_TOKEN
+            -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.scanner.disableEngineDownload=true \
+            -Dsonar.scanner.disableJreProvisioning=true
