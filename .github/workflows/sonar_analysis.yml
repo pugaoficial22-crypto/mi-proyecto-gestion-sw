@@ -19,15 +19,17 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Bypass ngrok browser warning
+        run: |
+          echo "SONAR_HOST_URL=${{ secrets.SONAR_HOST_URL }}" >> $GITHUB_ENV
+
       - name: Ejecución de Escáner SonarQube
         uses: SonarSource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          SONAR_SCANNER_OPTS: "-Dsonar.projectKey=mi-proyecto-gestion-sw -Dsonar.qualitygate.wait=true -Dsonar.scanner.proxyHost= -Dhttp.nonProxyHosts=*"
-        with:
-          args: >
+          SONAR_SCANNER_OPTS: >-
             -Dsonar.projectKey=mi-proyecto-gestion-sw
             -Dsonar.qualitygate.wait=true
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.scanner.socketTimeout=60
+            -Dsonar.scanner.responseTimeout=60
