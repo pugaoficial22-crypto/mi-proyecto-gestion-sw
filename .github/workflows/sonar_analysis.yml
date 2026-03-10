@@ -29,10 +29,13 @@ jobs:
         run: |
           wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
           unzip -q sonar-scanner-cli-4.8.0.2856-linux.zip
+          rm -rf ~/.sonar/cache
           sonar-scanner-4.8.0.2856-linux/bin/sonar-scanner \
             -Dsonar.projectKey=mi-proyecto-gestion-sw \
             -Dsonar.sources=src \
             -Dsonar.host.url=$SONAR_HOST_URL \
             -Dsonar.login=$SONAR_TOKEN \
             -Dsonar.scanner.disableEngineDownload=true \
-            -Dsonar.scanner.disableJreProvisioning=true
+            -Dsonar.scanner.disableJreProvisioning=true \
+            -Dsonar.scm.disabled=true \
+            -Dsonar.sourceEncoding=UTF-8
