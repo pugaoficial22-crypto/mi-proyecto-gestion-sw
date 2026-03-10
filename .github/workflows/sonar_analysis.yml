@@ -25,9 +25,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Limpiar Caché de Sonar (Evitar Invalid Hash)
-        run: rm -rf ~/.sonar/cache
-
       - name: Ejecución de Escáner SonarQube
         uses: SonarSource/sonarqube-scan-action@v2
         env:
