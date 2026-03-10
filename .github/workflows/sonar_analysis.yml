@@ -22,19 +22,17 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Limpiar temporales
-        run: |
-          rm -rf ~/.sonar/cache
-          mkdir -p ~/.sonar/cache
-
       - name: Ejecución de Escáner SonarQube
         uses: SonarSource/sonarqube-scan-action@v2.0.2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          # Esta línea ayuda a manejar conexiones lentas y evita archivos corruptos
+          SONAR_SCANNER_OPTS: "-Dsonar.ws.timeout=300 -Dhttp.keepAlive=false"
         with:
           args: >
             -Dsonar.projectKey=mi-proyecto-gestion-sw
             -Dsonar.sources=src
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.scanner.skipSslVerification=true
+            -Dsonar.qualitygate.wait=false
