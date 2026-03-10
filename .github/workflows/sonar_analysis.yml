@@ -22,17 +22,23 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Ejecución de Escáner SonarQube
-        uses: SonarSource/sonarqube-scan-action@v2.0.2
+      - name: Instalar SonarScanner manualmente (Evita descargas pesadas via Ngrok)
+        run: |
+          URL="https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip"
+          curl -sSLo sonar-scanner.zip $URL
+          unzip -o sonar-scanner.zip
+          echo "$(pwd)/sonar-scanner-5.0.1.3006-linux/bin" >> $GITHUB_PATH
+
+      - name: Ejecutar Análisis Directo
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          # Forzamos a Java a ser más agresivo con la red y no esperar por archivos corruptos
-          SONAR_SCANNER_OPTS: "-Dsonar.ws.timeout=600 -Dsonar.api.max_retries=5"
-        with:
-          args: >
-            -Dsonar.projectKey=mi-proyecto-gestion-sw
-            -Dsonar.sources=.
-            -Dsonar.sourceEncoding=UTF-8
-            -Dsonar.scanner.skipSslVerification=true
-            -Dsonar.qualitygate.wait=false
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=mi-proyecto-gestion-sw \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.scanner.skipSslVerification=true \
+            -Dsonar.qualitygate.wait=false \
+            -Dsonar.ws.timeout=600
