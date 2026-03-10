@@ -16,15 +16,28 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Ejecutar Scanner con Docker (Solución Anti-Hash)
+      - name: Setup Java 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Instalar y Ejecutar SonarScanner
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
-          docker run \
-            --rm \
-            -e SONAR_HOST_URL="${{ secrets.SONAR_HOST_URL }}" \
-            -e SONAR_TOKEN="${{ secrets.SONAR_TOKEN }}" \
-            -v "${{ github.workspace }}:/usr/src" \
-            sonarsource/sonar-scanner-cli \
+          # Descargamos el binario oficial (rápido y seguro)
+          URL="https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip"
+          curl -sSLo sonar-scanner.zip $URL
+          unzip -o sonar-scanner.zip
+          
+          # Ejecutamos el análisis enviando los datos a través del túnel de ngrok
+          ./sonar-scanner-5.0.1.3006-linux/bin/sonar-scanner \
             -Dsonar.projectKey=mi-proyecto-gestion-sw \
             -Dsonar.sources=. \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.login=$SONAR_TOKEN \
             -Dsonar.scanner.skipSslVerification=true \
+            -Dsonar.qualitygate.wait=false \
             -Dsonar.ws.timeout=600
