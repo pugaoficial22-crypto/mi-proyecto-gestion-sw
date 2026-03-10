@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
   sonarQube-analysis:
@@ -15,7 +12,7 @@ jobs:
 
     steps:
       - name: Clonación del repositorio (Checkout)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -25,8 +22,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Limpiar temporales
+        run: |
+          rm -rf ~/.sonar/cache
+          mkdir -p ~/.sonar/cache
+
       - name: Ejecución de Escáner SonarQube
-        uses: SonarSource/sonarqube-scan-action@v2
+        uses: SonarSource/sonarqube-scan-action@v2.0.2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -36,4 +38,3 @@ jobs:
             -Dsonar.sources=src
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.scanner.skipSslVerification=true
-            -Dsonar.qualitygate.wait=false
