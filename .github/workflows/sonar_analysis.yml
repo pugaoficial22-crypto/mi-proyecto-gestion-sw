@@ -34,4 +34,7 @@ jobs:
             -Dsonar.sources=src \
             -Dsonar.host.url=$SONAR_HOST_URL \
             -Dsonar.login=$SONAR_TOKEN \
-            -Dsonar.sourceEncoding=UTF-8
+            -Dsonar.sourceEncoding=UTF-8 \
+            -Djavax.net.ssl.trustAll=true \
+            -Dsonar.scanner.truststorePassword=changeit \
+            -Dsonar.ws.timeout=60
