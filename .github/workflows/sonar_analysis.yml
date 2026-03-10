@@ -27,12 +27,12 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          SONAR_SCANNER_OPTS: "-Dsonar.ws.timeout=300 -Dhttp.keepAlive=false"
+          # Forzamos a Java a ser más agresivo con la red y no esperar por archivos corruptos
+          SONAR_SCANNER_OPTS: "-Dsonar.ws.timeout=600 -Dsonar.api.max_retries=5"
         with:
           args: >
-            -X
             -Dsonar.projectKey=mi-proyecto-gestion-sw
-            -Dsonar.sources=src
+            -Dsonar.sources=.
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.scanner.skipSslVerification=true
             -Dsonar.qualitygate.wait=false
