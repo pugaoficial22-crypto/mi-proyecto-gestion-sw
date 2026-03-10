@@ -22,6 +22,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Agregar certificado ngrok
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          HOST=$(echo $SONAR_HOST_URL | sed 's|https://||')
+          echo | openssl s_client -connect ${HOST}:443 2>/dev/null | openssl x509 > ngrok-cert.pem
+          keytool -import -noprompt -alias ngrok -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -file ngrok-cert.pem
+
       - name: Instalar y ejecutar SonarScanner
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -34,7 +42,4 @@ jobs:
             -Dsonar.sources=src \
             -Dsonar.host.url=$SONAR_HOST_URL \
             -Dsonar.login=$SONAR_TOKEN \
-            -Dsonar.sourceEncoding=UTF-8 \
-            -Djavax.net.ssl.trustAll=true \
-            -Dsonar.scanner.truststorePassword=changeit \
-            -Dsonar.ws.timeout=60
+            -Dsonar.sourceEncoding=UTF-8
