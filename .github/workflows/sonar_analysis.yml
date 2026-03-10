@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Clonación del repositorio (Checkout)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -22,16 +22,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Instalar y ejecutar SonarScanner
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: |
-          wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.3.0.1492-linux.zip
-          unzip -q sonar-scanner-cli-3.3.0.1492-linux.zip
-          sonar-scanner-3.3.0.1492-linux/bin/sonar-scanner \
-            -Dsonar.projectKey=mi-proyecto-gestion-sw \
-            -Dsonar.sources=src \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_TOKEN \
+        with:
+          args: >
+            -Dsonar.projectKey=mi-proyecto-gestion-sw
+            -Dsonar.sources=src
             -Dsonar.sourceEncoding=UTF-8
