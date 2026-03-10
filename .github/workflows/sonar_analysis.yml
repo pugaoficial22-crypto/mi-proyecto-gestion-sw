@@ -24,7 +24,10 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_SCANNER_OPTS: "-Dsonar.projectKey=mi-proyecto-gestion-sw -Dsonar.qualitygate.wait=true -Dsonar.scanner.proxyHost= -Dhttp.nonProxyHosts=*"
         with:
           args: >
             -Dsonar.projectKey=mi-proyecto-gestion-sw
             -Dsonar.qualitygate.wait=true
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
